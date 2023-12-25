@@ -15,8 +15,11 @@ import {
   PointLight,
   PointLightHelper,
   Scene,
-  WebGLRenderer,
+  WebGLRenderer
+
 } from 'three'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import { DragControls } from 'three/examples/jsm/controls/DragControls'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import Stats from 'three/examples/jsm/libs/stats.module'
@@ -28,6 +31,7 @@ import './style.css'
 const CANVAS_ID = 'scene'
 
 let canvas: HTMLElement
+let loader: GLTFLoader
 let renderer: WebGLRenderer
 let scene: Scene
 let loadingManager: LoadingManager
@@ -49,6 +53,24 @@ init()
 animate()
 
 function init() {
+  // ===== DRACO LOADER TO LOAD DRACO COMPRESSED MODELS FROM BLENDER =====
+  {
+  const dracoLoader = new DRACOLoader()
+  const gltfLoader = new GLTFLoader()
+  dracoLoader.setDecoderPath('/draco/')
+  console.log(gltfLoader)
+  dracoLoader.setDecoderConfig({ type: 'js' })
+  gltfLoader.setDRACOLoader(dracoLoader)
+
+  // ===== LOADING GLB/GLTF MODEL FROM BLENDER =====
+  gltfLoader.load('/Duck/glTF/Duck.gltf', function 
+  (gltf) {
+    console.log(gltf)
+    scene.add(gltf.scene)
+  })
+
+  }
+  
   // ===== 🖼️ CANVAS, RENDERER, & SCENE =====
   {
     canvas = document.querySelector(`canvas#${CANVAS_ID}`)!
@@ -98,7 +120,7 @@ function init() {
     const sideLength = 1
     const cubeGeometry = new BoxGeometry(sideLength, sideLength, sideLength)
     const cubeMaterial = new MeshStandardMaterial({
-      color: '#f69f1f',
+      color: 'orange',
       metalness: 0.5,
       roughness: 0.7,
     })
